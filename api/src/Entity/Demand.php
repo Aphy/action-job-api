@@ -28,7 +28,7 @@ class Demand
     public string $author = '';
 
     /** The publication date of this demand. */
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     public ?\DateTimeImmutable $publicationDate = null;
 
     /** @var Signature[] Available signatures for this demand. */
