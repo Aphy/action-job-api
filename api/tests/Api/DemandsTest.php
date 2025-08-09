@@ -19,10 +19,13 @@ class DemandsTest extends ApiTestCase
 
         $this->assertResponseStatusCodeSame(201);
         $this->assertJsonContains([
-            '@context' => '/contexts/Demand',
+            '@id' => '/demands/1',
             '@type' => 'Demand',
-            'name' => 'Demand title',
-            'signatures' => array (),
+            'id' => 1,
+            'title' => 'Demand title',
+            'content' => '',
+            'author' => '',
+            'signatures' => []
         ]);
     }
 }
