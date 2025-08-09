@@ -22,6 +22,7 @@ class DemandsTest extends ApiTestCase
             '@context' => '/contexts/Demand',
             '@type' => 'Demand',
             'name' => 'Demand title',
+            'signatures' => array (),
         ]);
     }
 }
