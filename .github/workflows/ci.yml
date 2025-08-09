@@ -51,7 +51,7 @@ jobs:
         name: Check PWA reachability
         run: |
           sleep 10s
-          "curl -vk --fail-with-body -H 'Accept: text/html' https://localhost"
+          curl -vk --fail-with-body -H 'Accept: text/html' https://localhost
       -
         name: Check Mercure reachability
         run: curl -vkI --fail-with-body https://localhost/.well-known/mercure?topic=test
