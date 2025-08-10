@@ -10,9 +10,9 @@
     "install": {
       "caches": ["composer", "apt"],
       "commands": [
-        "COPY:composer.json composer.json",
-        "COPY:composer.lock composer.lock",
-        "composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader"
+        { "src": "composer.json", "dest": "composer.json" },
+        { "src": "composer.lock", "dest": "composer.lock" },
+        { "cmd": "composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader" }
       ],
       "deployOutputs": [{ "include": ["/app/vendor"] }]
     },
@@ -21,8 +21,8 @@
         { "step": "install" }
       ],
       "commands": [
-        "php bin/console cache:clear --env=prod --no-warmup || true",
-        "php bin/console cache:warmup --env=prod || true"
+        { "cmd": "php bin/console cache:clear --env=prod --no-warmup || true" },
+        { "cmd": "php bin/console cache:warmup --env=prod || true" }
       ],
       "deployOutputs": [{ "include": ["."] }]
     }
