@@ -1,12 +1,10 @@
 {
   "$schema": "https://schema.railpack.com",
 
-  "packages": { "php": "8.4" },
-
   "steps": {
     "install": {
       "commands": [
-        "composer install --working-dir=api --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv"
+        { "image": "docker.io/library/composer:2", "cmd": "composer install --working-dir=/app/api --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv" }
       ]
     },
 
@@ -22,9 +20,9 @@
         { "step": "build" }
       ],
       "commands": [
-        "sh -lc 'for i in $(seq 1 60); do php /app/api/bin/console doctrine:database:create --if-not-exists --no-interaction >/dev/null 2>&1 && exit 0 || { echo \"DB not ready… ($i)\"; sleep 2; }; done; echo \"DB not ready after timeout\"; exit 1'",
-        "php /app/api/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration",
-        "php /app/api/bin/console cache:warmup --env=prod"
+        { "image": "ghcr.io/railwayapp/railpack-runtime:latest", "cmd": "sh -lc 'for i in $(seq 1 60); do php /app/api/bin/console doctrine:database:create --if-not-exists --no-interaction >/dev/null 2>&1 && exit 0 || { echo \"DB not ready… ($i)\"; sleep 2; }; done; echo \"DB not ready after timeout\"; exit 1'" },
+        { "image": "ghcr.io/railwayapp/railpack-runtime:latest", "cmd": "php /app/api/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration" },
+        { "image": "ghcr.io/railwayapp/railpack-runtime:latest", "cmd": "php /app/api/bin/console cache:warmup --env=prod" }
       ]
     }
   },
