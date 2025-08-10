@@ -1,14 +1,18 @@
 {
   "$schema": "https://schema.railpack.com",
 
+  "packages": {
+    "php": "8.3"
+  },
+
   "steps": {
     "install": {
       "inputs": [
-        { "include": ["."] },
-        { "image": "composer:2" }
+        { "include": ["."] }
       ],
       "commands": [
-        { "cmd": "composer install --working-dir=/app/api --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv" }
+        { "image": "docker.io/library/composer:2", "src": "/usr/bin/composer", "dest": "/usr/bin/composer" },
+        { "cmd": "cd /app/api && composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv" }
       ],
       "deployOutputs": [
         { "include": ["/app/api/vendor"] }
@@ -44,13 +48,14 @@
   },
 
   "deploy": {
+    "base": { "image": "ghcr.io/railwayapp/railpack-runtime:latest" },
     "inputs": [
-      { "step": "migrate" }
+      { "step": "migrate", "include": ["."] }
     ],
     "variables": {
       "APP_ENV": "prod",
       "RAILPACK_PHP_ROOT_DIR": "api/public"
     },
-    "startCommand": "php -S 0.0.0.0:$PORT -t /app/api/public /app/api/public/index.php"
+    "startCommand": "/start-container.sh"
   }
 }
