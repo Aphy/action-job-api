@@ -8,7 +8,7 @@
   "steps": {
     "install": {
       "inputs": [
-        { "include": ["."] }
+        { "local": true, "include": ["."] }
       ],
       "commands": [
         { "image": "docker.io/library/composer:2", "src": "/usr/bin/composer", "dest": "/usr/bin/composer" },
@@ -21,7 +21,7 @@
 
     "build": {
       "inputs": [
-        { "step": "install" }
+        { "step": "install", "include": ["."] }
       ],
       "commands": [],
       "deployOutputs": [
@@ -31,12 +31,10 @@
 
     "migrate": {
       "inputs": [
-        { "step": "build" }
+        { "step": "build", "include": ["."] }
       ],
       "commands": [
-        {
-          "cmd": "sh -lc 'i=0; until php -r \"try{ new PDO(getenv(\\\"DATABASE_URL\\\")); exit(0);}catch(Throwable $e){ exit(1);}\"; do i=$((i+1)); [ $i -ge 60 ] && echo \"DB not ready after timeout\" && exit 1; echo \"DB not ready… ($i)\"; sleep 2; done'"
-        },
+        { "cmd": "sh -lc 'i=0; until php -r \"try{ new PDO(getenv(\\\"DATABASE_URL\\\")); exit(0);}catch(Throwable $e){ exit(1);}\"; do i=$((i+1)); [ $i -ge 60 ] && echo \"DB not ready after timeout\" && exit 1; echo \"DB not ready… ($i)\"; sleep 2; done'" },
         { "cmd": "php /app/api/bin/console doctrine:database:create --if-not-exists --no-interaction" },
         { "cmd": "php /app/api/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration" },
         { "cmd": "php /app/api/bin/console cache:warmup --env=prod" }
