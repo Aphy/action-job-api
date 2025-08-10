@@ -50,6 +50,7 @@
     "variables": {
       "APP_ENV": "prod",
       "RAILPACK_PHP_ROOT_DIR": "api/public"
-    }
+    },
+    "startCommand": "php -S 0.0.0.0:$PORT -t /app/api/public /app/api/public/index.php"
   }
 }
