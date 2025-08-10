@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# se placer dans /app/api
+cd "$(dirname "$0")"
+
 : "${APP_ENV:=prod}"
 : "${APP_SECRET:?APP_SECRET missing}"
 : "${DATABASE_URL:?DATABASE_URL missing}"
@@ -14,5 +17,3 @@ done
 php bin/console doctrine:database:create --if-not-exists || true
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || true
 php bin/console cache:warmup --env=prod || true
-
-exec ./start-container.sh
