@@ -7,10 +7,10 @@
         { "image": "composer:2" }
       ],
       "commands": [
-        { "cmd": "composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv" }
+        { "cmd": "composer install --working-dir=api --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv" }
       ],
       "deployOutputs": [
-        { "include": ["/app/api/vendor"] }
+        { "include": ["/api/vendor"] }
       ]
     },
 
@@ -33,6 +33,6 @@
       "APP_ENV": "prod",
       "RAILPACK_PHP_ROOT_DIR": "api/public"
     },
-    "startCommand": "./entrypoint.sh"
+    "startCommand": "./api/entrypoint.sh"
   }
 }
