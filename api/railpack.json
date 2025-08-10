@@ -10,12 +10,8 @@
     "install": {
       "caches": ["composer", "apt"],
       "commands": [
-        { "cmd": "php -v || true" },
-        { "cmd": "php -m || true" },
         { "src": "composer.json", "dest": "composer.json" },
         { "src": "composer.lock", "dest": "composer.lock" },
-        { "cmd": "[[ -n \"$GITHUB_TOKEN\" ]] && composer config -g github-oauth.github.com \"$GITHUB_TOKEN\" || true" },
-        { "cmd": "composer validate --no-check-lock || true" },
         { "cmd": "composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv" }
       ],
       "deployOutputs": [{ "include": ["/app/vendor"] }]
@@ -23,21 +19,15 @@
     "build": {
       "inputs": [{ "step": "install" }],
       "commands": [
-        { "cmd": "composer dump-autoload -o || true" },
-        { "cmd": "php bin/console cache:clear --env=prod --no-warmup || true" },
-        { "cmd": "php bin/console cache:warmup --env=prod || true" }
+        { "cmd": "composer dump-autoload -o || true" }
       ],
       "deployOutputs": [{ "include": ["."] }]
     }
   },
 
   "deploy": {
-    "inputs": [
-      { "step": "build", "include": ["."] }
-    ],
-    "variables": {
-      "APP_ENV": "prod"
-    },
-    "startCommand": "php bin/console doctrine:database:create --if-not-exists && php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration && ./start-container.sh"
+    "inputs": [{ "step": "build" }],
+    "variables": { "APP_ENV": "prod" },
+    "startCommand": "./entrypoint.sh"
   }
 }
