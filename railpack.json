@@ -22,8 +22,7 @@
         { "step": "build" }
       ],
       "commands": [
-        "sh -lc 'i=0; until php -r \"try{ new PDO(getenv(\\\"DATABASE_URL\\\")); exit(0);}catch(Throwable $e){ exit(1);}\"; do i=$((i+1)); [ $i -ge 60 ] && echo \"DB not ready after timeout\" && exit 1; echo \"DB not ready… ($i)\"; sleep 2; done'",
-        "php /app/api/bin/console doctrine:database:create --if-not-exists --no-interaction",
+        "sh -lc 'for i in $(seq 1 60); do php /app/api/bin/console doctrine:database:create --if-not-exists --no-interaction >/dev/null 2>&1 && exit 0 || { echo \"DB not ready… ($i)\"; sleep 2; }; done; echo \"DB not ready after timeout\"; exit 1'",
         "php /app/api/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration",
         "php /app/api/bin/console cache:warmup --env=prod"
       ]
