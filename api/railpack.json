@@ -1,33 +1,36 @@
 {
   "$schema": "https://schema.railpack.com",
 
-  "caches": {
-    "composer": { "directory": "/root/.cache/composer", "type": "shared" },
-    "apt": { "directory": "/var/cache/apt", "type": "locked" }
-  },
-
   "steps": {
     "install": {
-      "caches": ["composer", "apt"],
+      "inputs": [
+        { "image": "composer:2" },
+        { "local": true }
+      ],
       "commands": [
-        { "src": "composer.json", "dest": "composer.json" },
-        { "src": "composer.lock", "dest": "composer.lock" },
-        { "cmd": "composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv" }
+        "composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv"
       ],
       "deployOutputs": [{ "include": ["/app/vendor"] }]
     },
+
     "build": {
-      "inputs": [{ "step": "install" }],
+      "inputs": [
+        { "step": "install" }
+      ],
       "commands": [
-        { "cmd": "composer dump-autoload -o || true" }
+        "composer dump-autoload -o || true"
       ],
       "deployOutputs": [{ "include": ["."] }]
     }
   },
 
   "deploy": {
-    "inputs": [{ "step": "build" }],
-    "variables": { "APP_ENV": "prod" },
+    "inputs": [
+      { "step": "build", "include": ["."] }
+    ],
+    "variables": {
+      "APP_ENV": "prod"
+    },
     "startCommand": "./entrypoint.sh"
   }
 }
