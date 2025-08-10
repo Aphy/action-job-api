@@ -4,17 +4,11 @@
   "steps": {
     "install": {
       "inputs": [
-        { "image": "ghcr.io/railwayapp/railpack-runtime:latest" },
+        { "image": "docker.io/library/composer:2" },
         { "local": true, "include": ["."] }
       ],
       "commands": [
-        { "image": "docker.io/library/composer:2", "src": "/usr/bin/composer", "dest": "/usr/local/bin/composer" },
-        { "path": "/usr/local/bin" },
-        { "cmd": "composer --version" },
-        { "cmd": "composer install --working-dir=/app/api --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv" }
-      ],
-      "deployOutputs": [
-        { "include": ["/app/api/vendor"] }
+        "composer install --working-dir=/app/api --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts -vvv"
       ]
     },
 
@@ -27,7 +21,8 @@
 
     "migrate": {
       "inputs": [
-        { "step": "build" }
+        { "image": "ghcr.io/railwayapp/railpack-runtime:latest" },
+        { "step": "build", "include": ["."] }
       ],
       "commands": [
         "sh -lc 'for i in $(seq 1 60); do php /app/api/bin/console doctrine:database:create --if-not-exists --no-interaction >/dev/null 2>&1 && exit 0 || { echo \"DB not ready… ($i)\"; sleep 2; }; done; echo \"DB not ready after timeout\"; exit 1'",
@@ -40,7 +35,7 @@
   "deploy": {
     "base": { "image": "ghcr.io/railwayapp/railpack-runtime:latest" },
     "inputs": [
-      { "step": "migrate" }
+      { "step": "build", "include": ["."] }
     ],
     "variables": {
       "APP_ENV": "prod",
