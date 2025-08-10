@@ -33,6 +33,6 @@
       "APP_ENV": "prod",
       "RAILPACK_PHP_ROOT_DIR": "api/public"
     },
-    "startCommand": "cd api && ./entrypoint.sh"
+    "startCommand": "./entrypoint.sh"
   }
 }
