@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schema.railpack.com",
+
+  "caches": {
+    "composer": { "directory": "/root/.cache/composer", "type": "shared" },
+    "apt": { "directory": "/var/cache/apt", "type": "locked" }
+  },
+
+  "steps": {
+    "install": {
+      "caches": ["composer", "apt"],
+      "commands": [
+        "COPY:composer.json composer.json",
+        "COPY:composer.lock composer.lock",
+        "composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader"
+      ],
+      "deployOutputs": [{ "include": ["/app/vendor"] }]
+    },
+
+    "build": {
+      "inputs": [{ "step": "install", "include": ["."] }],
+      "commands": [
+        "php bin/console cache:clear --env=prod --no-warmup || true",
+        "php bin/console cache:warmup --env=prod || true"
+      ],
+      "deployOutputs": [{ "include": ["."] }]
+    }
+  },
+
+  "deploy": {
+    "inputs": [{ "step": "build", "include": ["."] }],
+    "variables": {
+      "APP_ENV": "prod"
+    },
+    "startCommand": "php bin/console doctrine:database:create --if-not-exists && php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration && ./start-container.sh"
+  }
+}
